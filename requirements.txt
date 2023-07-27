@@ -14,9 +14,6 @@ pandas==2.0.1
 Pillow==9.5.0
 psycopg2-binary==2.9.6
 python-dateutil==2.8.2
-pytz==2023.3
-pywin32==306
-pywinusb==0.4.2
 requests==2.30.1
 six==1.16.0
 sqlparse==0.4.4

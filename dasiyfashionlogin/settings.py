@@ -99,10 +99,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'railway',
-        'HOST': 'containers-us-west-134.railway.app',
-        'PORT': '7703',
+        'HOST': 'containers-us-west-33.railway.app',
+        'PORT': '6542',
         'USER': 'postgres',
-        'PASSWORD': 'G71i2ahf8OGmXKJ2O7kf',
+        'PASSWORD': 'Jl5bxXAYR0GqeiWGGCFb',
     }
 }
 
@@ -161,7 +161,7 @@ STATICFILES_DIRS = [
     (os.path.join(BASE_DIR, 'static'))
 ]
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 
 STATIC_ROOT = BASE_DIR / "staticfiles_build" / "static"
 

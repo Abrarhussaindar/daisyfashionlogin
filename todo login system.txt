@@ -1,0 +1,18 @@
+all below things added to attendance list
+
+login time
+logout time
+breaktime
+no of login
+no of logout
+number of remaning hours/hours
+attendances
+
+
+need daily , weekly and monthly attendance
+
+
+
+2 and 4th saturday off
+off according to calender dates
+

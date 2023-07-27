@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  </head>
+  <body>
+{% comment %}     
+    {% if messages %}
+      <div class="alert alert-danger">
+        {% for message in messages %}
+          {{ message }}
+        {% endfor %}
+      </div>
+    {% endif %} {% endcomment %}
+    <div class="container">
+      {% comment %} <div class="stu">Welcome Employee !</div>
+      <div class="logo">
+        <img src="{% static '#' %}" alt="logo" />
+      </div>
+      <div class="uni">Daisy Fashion</div> {% endcomment %}
+      <h1>Login </h1>
+      
+      <p class="header-btns"><a href="{% url "register" %}"> Sign Up</a></p>
+
+
+      <div class="category">
+          {% for category in department_categories %}
+            
+              <button id="{{ category }}" value=" {{ category }}" class="category-btns"> {{ category }}</button>
+            
+        {% endfor %}
+      </div>
+
+    </div>
+
+      <div class="wrapper wrapper-visibility">
+        <form method="POST">
+          {% csrf_token %}
+          <div class="field">
+            <label>Department</label>
+            <input id="department" type="text" name="department" required />
+          </div>
+          <div class="field">
+            <label>UserName</label>
+            <input type="text" name="username" required />
+          </div>
+          <div class="field">
+            <label>Password</label>
+            <input type="password" name="Password" required />
+          </div>
+          
+            <input type="submit" class="submit-btn" value="Login" />
+         
+        </form>
+
+        {% comment %} <div class="footer">
+          &#169; 2023 Abrar Hussain Dar, All rights reserved.&#128514;
+        </div> {% endcomment %}
+      </div> 
+
+      {% if start_counter %}
+      <!-- Script to start the counter -->
+      <script>
+          startCounter();
+          // Show the popup after 2 seconds (optional)
+          setTimeout(() => {
+              document.getElementById('counter-popup').style.display = 'block';
+          }, 2000);
+      </script>
+  {% endif %}
+
+
+      {% if permission == 'not given' %}
+        <script>
+          window.alert("Get permission from your team lead.");
+        </script>
+      {% endif %}
+      <script src="{% static 'js/main.js' %}" type="text/javaScript"></script>
+  </body>
+</html>

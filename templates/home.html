@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <style>
+      #counter-div {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background-color: #f1f1f1;
+        padding: 10px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-btns">
+        <div class="emp">
+          {% if user.is_authenticated %}Welcome! "{{ emp.name }}" {% endif %}
+        </div>
+        <div class="lg-btn">
+          {% if user.is_authenticated %}
+          <a id="logout-link" href="{% url 'user_logout' %}">Log Out</a>
+          {% if user.is_teamLead %}
+          <a id="logout-link" href="{% url 'permissions' %}"
+            >Change Permissions</a
+          >
+          {% endif %} {% else %}
+          <a href="{% url 'login' %}">Log in</a>
+          <a href="{% url 'register' %}">Sign Up</a>
+          {% endif %}
+        </div>
+      </div>
+    </header>
+
+    <main>
+      {% if user.is_authenticated %}
+      <div class="personal_info">
+        <div class="lg_details">
+          <div class="info">
+            <h2>Personal Login Details:</h2>
+          </div>
+          <table>
+            <tr>
+              <th>In Time</th>
+              <th>Previous Logout Time</th>
+              <th>Last Login Duration</th>
+            </tr>
+
+            <tr>
+              <td>{{ emp.intime }}</td>
+              <td>{{ emp.out_time }}</td>
+              <td>{{ emp.duration_time }}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="canv">
+          <div class="tw">
+            <table>
+              <tr>
+                <th class="twt">Total Work Time</th>
+                <th class="trt">Total Remaining Time</th>
+              </tr>
+              <tr>
+                <td class="twt" style="font-weight: 900">
+                  <span id="total-work">{{ total_work }}</span>
+                </td>
+                <td class="trt" style="font-weight: 900">
+                  <span id="remaining-time">{{ remaining_time }}</span>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div class="kuch-bhi">
+            <canvas
+              id="workChart"
+              width="50"
+              height="50"
+              style="
+                display: block;
+                box-sizing: border-box;
+                height: 50px;
+                width: 50px;
+              "
+            ></canvas>
+            <div class="wd">Work Done</div>
+          </div>
+        </div>
+      </div>
+      {% endif %} {% if user.is_teamLead %}
+      <div class="emp-table">
+        <div class="info">
+          <h2>Other Employee's Login Details:</h2>
+        </div>
+        <table>
+          <tr>
+            <th>Name</th>
+            <th class="twd">Total Work Done</th>
+            <th class="tr">Time Remaining</th>
+            <th>In Time</th>
+            <th>Previous Logout Time</th>
+            <th>Last Login Duration</th>
+            <th>Permission</th>
+          </tr>
+          {% for emp in employees %}
+          <tr>
+            <td>{{ emp.name }}</td>
+            <td class="twd" style="font-weight: 900">{{ emp.work_time }}</td>
+            <td class="tr" style="font-weight: 900">
+              {{ emp.remaining_time }}
+            </td>
+            <td>{{ emp.intime }}</td>
+            <td>{{ emp.out_time }}</td>
+            <td>{{ emp.duration_time }}</td>
+            <td>{{ emp.permission }}</td> 
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+      {% endif %}
+    </main>
+
+
+    <footer></footer>
+
+
+    <script>
+      var inactivityTimeout = 10000; // Inactivity timeout in seconds (e.g., 300 seconds = 5 minutes)
+      var inactivityTimer;
+
+      function resetInactivityTimer() {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(logoutUser, inactivityTimeout * 1000);
+      }
+
+      function logoutUser() {
+        var currentUserDepartment = "{{ emp.department }}"; // Replace with the variable that holds the employee's department
+        var excludedDepartments = ["Sales"]; // Add the department names to exclude from the inactivity timer
+
+        // Check if the current user's department is in the excluded departments list
+        if (!excludedDepartments.includes(currentUserDepartment)) {
+          sessionStorage.removeItem("startTime");
+          window.location.href = "{% url 'user_logout' %}";
+        }
+      }
+
+      document.addEventListener("mousemove", resetInactivityTimer);
+      document.addEventListener("keydown", resetInactivityTimer);
+      resetInactivityTimer();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      // Get the canvas element
+      var workChartCanvas = document.getElementById('workChart');
+
+      // Create the chart context
+      var ctx = workChartCanvas.getContext('2d');
+
+      // Initialize the chart
+      var chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          datasets: [
+            {
+              data: [0, 8 * 3600], // Initial data (0 hours worked)
+              backgroundColor: [
+                'red', // Color for remaining work time
+                'green', // Color for worked time
+              ],
+            },
+          ],
+        },
+        options: {
+          cutoutPercentage: 70, // Set the size of the inner circle
+          tooltips: {
+            enabled: false, // Disable tooltips
+          },
+        },
+      });
+
+      // Update the chart data with the employee's work time
+      var workTime = {{ total_work_seconds }};
+      var remainingTime = Math.max(8 * 3600 - workTime, 0);
+      chart.data.datasets[0].data = [remainingTime, workTime];
+      chart.update();
+    </script>
+
+    <script>
+      function updateData() {
+        // Make an AJAX request to the server to get the updated work time and remaining time
+        fetch("{% url 'get_work_time' %}")
+          .then((response) => response.json())
+          .then((data) => {
+            // Update the total work time
+            document.getElementById("total-work").innerText = data.work_time;
+
+            // Update the remaining time (assuming you receive it in 'remaining_time' field)
+            document.getElementById("remaining-time").innerText =
+              data.remaining_time;
+          })
+          .catch((error) => {
+            console.error("Error updating data:", error);
+          });
+      }
+
+      // Refresh data every 10 seconds
+      setInterval(updateData, 1000);
+
+      // Run the initial update when the page loads
+      updateData();
+    </script>
+    {% comment %} <script>
+      // Function to perform logout when the window is closed or navigated away
+      function logoutOnWindowClose() {
+        // Make an AJAX request to the server to log out the user
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "{% url 'user_logout' %}", true);
+        xhr.send();
+      }
+
+      // Attach the 'beforeunload' event to the window
+      window.addEventListener('beforeunload', logoutOnWindowClose);
+    </script> {% endcomment %}
+  </body>
+</html>

@@ -259,8 +259,8 @@ def home(request):
         'duration': duration.total_seconds() if duration else 0,
     }
 
-    if request.is_ajax():
-        return JsonResponse({'total_work': total_work_formatted})
+    # if request.is_ajax():
+    #     return JsonResponse({'total_work': total_work_formatted})
 
     return render(request, "home.html", context)
 

@@ -97,12 +97,12 @@ AUTH_USER_MODEL = 'login.Employee'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'db_df',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'USER': 'root',
-        'PASSWORD': 'Abrardar@123',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'railway',
+        'HOST': 'containers-us-west-134.railway.app',
+        'PORT': '7703',
+        'USER': 'postgres',
+        'PASSWORD': 'G71i2ahf8OGmXKJ2O7kf',
     }
 }
 
